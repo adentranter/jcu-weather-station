@@ -2,18 +2,32 @@
 
 import { motion } from "framer-motion"
 import { ArrowUp } from "lucide-react"
-import { Area, AreaChart, ReferenceLine, ResponsiveContainer, XAxis, YAxis } from "recharts"
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { coastal, nextTides, tide, waveDirection, waveHistory } from "@/lib/dashboard-data"
+import type { CoastalReading, TidePoint } from "@/lib/dashboard-data"
 
-export function CoastalCard() {
+type NextTide = { type: string; time: string; day: string; level: number }
+
+export function CoastalCard({
+  coastal,
+  waveDirection,
+  waveHistory,
+  updated,
+}: {
+  coastal: CoastalReading[]
+  waveDirection: { label: string; degrees: number }
+  waveHistory: { hour: string; hs: number }[]
+  updated: string | null
+}) {
   return (
     <Card className="h-full">
       <CardHeader>
         <CardTitle>Sea state</CardTitle>
-        <CardDescription>Townsville wave buoy · Coastal Data System</CardDescription>
+        <CardDescription>
+          Townsville wave buoy · {updated ? `as at ${updated}` : "simulated"}
+        </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-1 flex-col gap-5">
         {coastal.map((reading, i) => (
@@ -29,7 +43,7 @@ export function CoastalCard() {
               <motion.div
                 className="h-full origin-left rounded-full bg-sea"
                 initial={{ scaleX: 0 }}
-                whileInView={{ scaleX: reading.value / reading.max }}
+                whileInView={{ scaleX: Math.min(1, reading.value / reading.max) }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.9, delay: 0.1 + i * 0.08, ease: [0.22, 1, 0.36, 1] }}
               />
@@ -75,12 +89,42 @@ export function CoastalCard() {
   )
 }
 
-export function TideCard() {
+function TideTooltip({
+  active,
+  payload,
+  label,
+}: {
+  active?: boolean
+  payload?: { value?: number | string }[]
+  label?: string | number
+}) {
+  if (!active || !payload?.length) return null
+  return (
+    <div className="rounded-lg border bg-popover/95 px-2.5 py-1.5 text-xs tabular-nums shadow-lg backdrop-blur">
+      {label} · {Number(payload[0].value).toFixed(2)} m
+    </div>
+  )
+}
+
+export function TideCard({
+  tide,
+  nextTides,
+  latestLevel,
+}: {
+  tide: TidePoint[]
+  nextTides: NextTide[]
+  latestLevel: number | null
+}) {
+  const observed = latestLevel !== null
   return (
     <Card className="h-full">
       <CardHeader>
         <CardTitle>Tide</CardTitle>
-        <CardDescription>Predicted water level, metres above LAT</CardDescription>
+        <CardDescription>
+          {observed
+            ? `Observed, last 24 h · now ${latestLevel.toFixed(2)} m above LAT`
+            : "Predicted water level, metres above LAT"}
+        </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-1 flex-col gap-4">
         <div className="min-h-36 flex-1">
@@ -93,8 +137,8 @@ export function TideCard() {
                 </linearGradient>
               </defs>
               <XAxis dataKey="time" hide />
-              <YAxis hide domain={[0, 3.5]} />
-              <ReferenceLine x="06:00" stroke="var(--color-gust)" strokeDasharray="3 3" />
+              <YAxis hide domain={[0, "dataMax + 0.3"]} />
+              <Tooltip content={<TideTooltip />} cursor={{ stroke: "var(--border)" }} />
               <Area
                 type="monotone"
                 dataKey="level"
@@ -108,12 +152,15 @@ export function TideCard() {
         <Separator />
         <ul className="grid grid-cols-3 gap-2 text-center">
           {nextTides.map((t) => (
-            <li key={t.time} className="space-y-1">
+            <li key={`${t.day}-${t.time}`} className="space-y-1">
               <Badge variant="outline" className="text-[10px] text-muted-foreground">
                 {t.type}
               </Badge>
               <p className="text-lg font-light tabular-nums">{t.time}</p>
-              <p className="text-xs text-muted-foreground tabular-nums">{t.level.toFixed(1)} m</p>
+              <p className="text-xs text-muted-foreground tabular-nums">
+                {t.day ? `${t.day} · ` : ""}
+                {t.level.toFixed(1)} m
+              </p>
             </li>
           ))}
         </ul>

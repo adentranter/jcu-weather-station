@@ -2,16 +2,18 @@ import { ArrowUpRight } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { HoverLift, Stagger, StaggerItem } from "@/components/dashboard/motion"
-import { datasets, type DataStatus } from "@/lib/dashboard-data"
+import type { Dataset, DataStatus } from "@/lib/dashboard-data"
 import { cn } from "@/lib/utils"
 
 const statusTone: Record<DataStatus, { label: string; className: string }> = {
+  live: { label: "Live", className: "border-sea bg-sea/15 text-sea" },
   simulated: { label: "Simulated", className: "border-gust/40 text-gust" },
+  offline: { label: "Offline", className: "border-chart-5/40 text-chart-5" },
   historical: { label: "Historical", className: "border-sea/40 text-sea" },
   planned: { label: "Planned", className: "border-border text-muted-foreground" },
 }
 
-export function DatasetGrid() {
+export function DatasetGrid({ datasets }: { datasets: Dataset[] }) {
   return (
     <Stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {datasets.map((dataset) => {

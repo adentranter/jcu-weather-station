@@ -1,7 +1,7 @@
-// Values marked `simulated` are placeholders shaped like the public feeds in
-// breakdown.json. Swap them for real BOM / data.qld.gov.au pulls later.
+// Simulated values double as fallbacks when a live feed in lib/sources is
+// unreachable, so keep them shaped like the real data.
 
-export type DataStatus = "simulated" | "historical" | "planned"
+export type DataStatus = "live" | "simulated" | "offline" | "historical" | "planned"
 
 export type Station = {
   name: string
@@ -84,8 +84,17 @@ export type Dataset = {
   status: DataStatus
 }
 
-export const snapshot = {
+export type Snapshot = {
+  label: string
+  live: boolean
+  takenAt: string
+  seasonStart: string
+  daysToSeason: number
+}
+
+export const snapshot: Snapshot = {
   label: "Simulated snapshot",
+  live: false,
   takenAt: "Tue 6 Oct 2026, 06:00 AEST",
   seasonStart: "1 Nov 2026",
   daysToSeason: 26,
@@ -238,56 +247,15 @@ export const nextTides = [
   { type: "High", time: "21:40", level: 2.9 },
 ]
 
-export const cyclones: CycloneEvent[] = [
-  {
-    name: "Kirrily",
-    year: 2024,
-    date: "25 Jan",
-    category: 3,
-    landfall: "Townsville",
-    note: "Crossed near Toomulla, north of the city.",
-  },
-  {
-    name: "Debbie",
-    year: 2017,
-    date: "28 Mar",
-    category: 4,
-    landfall: "Airlie Beach",
-    note: "Slow-moving system with prolonged damaging winds.",
-  },
-  {
-    name: "Yasi",
-    year: 2011,
-    date: "3 Feb",
-    category: 5,
-    landfall: "Mission Beach",
-    note: "Large system; damaging winds reached Townsville.",
-  },
-  {
-    name: "Larry",
-    year: 2006,
-    date: "20 Mar",
-    category: 4,
-    landfall: "Innisfail",
-    note: "Major damage to housing across the Cassowary Coast.",
-  },
-  {
-    name: "Tessi",
-    year: 2000,
-    date: "3 Apr",
-    category: 2,
-    landfall: "Townsville",
-    note: "Landslides and widespread power outages in the city.",
-  },
-  {
-    name: "Althea",
-    year: 1971,
-    date: "24 Dec",
-    category: 4,
-    landfall: "Townsville",
-    note: "Its housing damage helped lead to the Cyclone Testing Station.",
-  },
-]
+// Hand-written context layered over the BOM track data in data/townsville-cyclones.json.
+export const cycloneNotes: Record<string, { landfall: string; note: string }> = {
+  Kirrily: { landfall: "Townsville", note: "Crossed near Toomulla, north of the city." },
+  Debbie: { landfall: "Airlie Beach", note: "Slow-moving system with prolonged damaging winds." },
+  Yasi: { landfall: "Mission Beach", note: "Large system; damaging winds reached Townsville." },
+  Larry: { landfall: "Innisfail", note: "Major damage to housing across the Cassowary Coast." },
+  Tessi: { landfall: "Townsville", note: "Landslides and widespread power outages in the city." },
+  Althea: { landfall: "Townsville", note: "Its housing damage helped lead to the Cyclone Testing Station." },
+}
 
 export const swirlnet: SwirlnetTower[] = [
   { id: "SW-01", location: "Douglas depot", state: "ready", battery: 100 },
@@ -306,14 +274,24 @@ export const labQueue: LabTest[] = [
 
 export const datasets: Dataset[] = [
   {
+    id: "bom_townsville_observations",
+    name: "Townsville Aero observations",
+    provider: "Bureau of Meteorology",
+    description: "Half-hourly observations for the last 72 hours from the airport AWS (WMO 94294).",
+    variables: ["wind", "gusts", "direction", "temperature", "rainfall", "pressure", "humidity"],
+    coverage: "Rolling 72 h",
+    url: "https://www.bom.gov.au/products/IDQ60801/IDQ60801.94294.shtml",
+    status: "simulated",
+  },
+  {
     id: "bom_townsville_aero",
     name: "Townsville Aero climate data",
     provider: "Bureau of Meteorology",
-    description: "Daily and monthly observations from the official airport station.",
+    description: "Daily and monthly climate statistics and records from the official airport station.",
     variables: ["wind", "gusts", "temperature", "rainfall", "pressure", "humidity"],
     coverage: "1940 – present",
     url: "https://www.bom.gov.au/climate/averages/tables/cw_032040.shtml",
-    status: "simulated",
+    status: "planned",
   },
   {
     id: "bom_tropical_cyclone_database",
@@ -339,21 +317,41 @@ export const datasets: Dataset[] = [
     id: "qld_waves_townsville",
     name: "Coastal Data System – Waves (Townsville)",
     provider: "Queensland Government",
-    description: "Wave buoy heights, periods, direction and sea surface temperature.",
+    description: "Near real-time wave buoy heights, periods, direction and sea surface temperature.",
     variables: ["Hs", "Hmax", "Tz", "Tp", "direction", "SST"],
-    coverage: "2013 – present",
-    url: "https://www.data.qld.gov.au/dataset/coastal-data-system-waves-townsville",
+    coverage: "Rolling 7 days · archive 2013 – present",
+    url: "https://www.data.qld.gov.au/dataset/coastal-data-system-near-real-time-wave-data",
+    status: "simulated",
+  },
+  {
+    id: "townsville_tide_gauge",
+    name: "Townsville tide gauge",
+    provider: "Maritime Safety Queensland",
+    description: "Observed water level at Townsville Berth 1, updated every few minutes, for storm surge context.",
+    variables: ["water level", "LAT datum"],
+    coverage: "Rolling 7 days",
+    url: "https://www.data.qld.gov.au/dataset/townsville-tide-gauge-near-real-time-tide-readings",
     status: "simulated",
   },
   {
     id: "townsville_tides",
     name: "Townsville tide predictions",
-    provider: "Queensland Government",
-    description: "Predicted interval and high/low water levels for storm surge context.",
-    variables: ["water level", "high/low tides"],
-    coverage: "Rolling predictions",
-    url: "https://www.data.qld.gov.au/dataset?q=townsville+tide",
+    provider: "Maritime Safety Queensland",
+    description: "Predicted high and low water times and heights for the year.",
+    variables: ["high/low tides", "predicted level"],
+    coverage: "Annual predictions",
+    url: "https://www.data.qld.gov.au/dataset/townsville-tide-gauge-predicted-high-low-data",
     status: "simulated",
+  },
+  {
+    id: "dataquoll",
+    name: "Incidents and river gauges",
+    provider: "DataQuoll",
+    description: "Official QLD warnings and incidents, plus river gauges against BOM flood classifications.",
+    variables: ["warnings", "incidents", "river level", "flood class"],
+    coverage: "Live",
+    url: "https://dataquoll.io/flood",
+    status: "offline",
   },
   {
     id: "swirlnet",
@@ -363,6 +361,26 @@ export const datasets: Dataset[] = [
     variables: ["wind speed", "gusts", "direction"],
     coverage: "Event-based",
     url: "https://www.jcu.edu.au/cyclone-testing-station",
+    status: "planned",
+  },
+  {
+    id: "cts_publications",
+    name: "CTS technical reports",
+    provider: "JCU Cyclone Testing Station",
+    description: "Post-event damage investigations and test reports, published as PDFs.",
+    variables: ["damage surveys", "wind fields", "test results"],
+    coverage: "1977 – present",
+    url: "https://www.jcu.edu.au/cyclone-testing-station/education/publications",
+    status: "historical",
+  },
+  {
+    id: "qra_reconstruction_monitoring",
+    name: "Reconstruction Monitoring",
+    provider: "Queensland Reconstruction Authority",
+    description: "House-by-house recovery inspections after severe events. Reports only, no open feed.",
+    variables: ["damage level", "repair progress"],
+    coverage: "Event-based since 2011",
+    url: "https://www.qra.qld.gov.au/reconstruction-monitoring/about",
     status: "planned",
   },
 ]

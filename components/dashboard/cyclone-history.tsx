@@ -1,7 +1,8 @@
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Stagger, StaggerItem } from "@/components/dashboard/motion"
-import { cyclones, type CycloneEvent } from "@/lib/dashboard-data"
+import { getCycloneHistory } from "@/lib/cyclones"
+import type { CycloneEvent } from "@/lib/dashboard-data"
 import { cn } from "@/lib/utils"
 
 const categoryTone: Record<CycloneEvent["category"], string> = {
@@ -13,18 +14,22 @@ const categoryTone: Record<CycloneEvent["category"], string> = {
 }
 
 export function CycloneHistory() {
+  const { events, total, radiusKm, since } = getCycloneHistory()
   return (
     <Card className="h-full">
       <CardHeader>
-        <CardTitle>Notable North Queensland landfalls</CardTitle>
-        <CardDescription>From BOM cyclone history · categories at landfall</CardDescription>
+        <CardTitle>Cyclones that shaped Townsville</CardTitle>
+        <CardDescription>
+          BOM Tropical Cyclone Database · {total} systems within {radiusKm} km since {since} · peak
+          category near Townsville
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Stagger className="relative space-y-1">
           <div className="absolute top-2 bottom-2 left-20 w-px bg-border" aria-hidden />
-          {cyclones.map((event) => (
+          {events.map((event) => (
             <StaggerItem
-              key={event.name}
+              key={`${event.name}-${event.year}`}
               className="group relative grid grid-cols-[4rem_1fr] gap-4 rounded-lg py-2.5 pr-2"
             >
               <div className="text-right">

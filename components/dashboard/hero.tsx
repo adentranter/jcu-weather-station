@@ -1,8 +1,8 @@
 import { MapPin, Radio, CalendarClock } from "lucide-react"
 import { Reveal } from "@/components/dashboard/motion"
-import { snapshot, station } from "@/lib/dashboard-data"
+import { station, type Snapshot } from "@/lib/dashboard-data"
 
-export function Hero() {
+export function Hero({ snapshot }: { snapshot: Snapshot }) {
   const meta = [
     {
       icon: MapPin,
@@ -14,7 +14,10 @@ export function Hero() {
     },
     {
       icon: CalendarClock,
-      label: `Season opens ${snapshot.seasonStart} · ${snapshot.daysToSeason} days`,
+      label:
+        snapshot.daysToSeason > 0
+          ? `Season opens ${snapshot.seasonStart} · ${snapshot.daysToSeason} days`
+          : `Cyclone season under way since ${snapshot.seasonStart}`,
     },
   ]
 

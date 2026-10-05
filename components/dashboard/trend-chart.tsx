@@ -15,7 +15,7 @@ import {
 } from "recharts"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { hourly } from "@/lib/dashboard-data"
+import type { HourlyReading } from "@/lib/dashboard-data"
 
 type View = "wind" | "pressure" | "rain"
 
@@ -56,7 +56,7 @@ function ChartTooltip({
   )
 }
 
-function Chart({ view }: { view: View }) {
+function Chart({ view, hourly }: { view: View; hourly: HourlyReading[] }) {
   if (view === "rain") {
     return (
       <BarChart data={hourly} margin={{ top: 8, right: 4, left: -20, bottom: 0 }}>
@@ -127,7 +127,7 @@ function Chart({ view }: { view: View }) {
   )
 }
 
-export function TrendChart() {
+export function TrendChart({ hourly }: { hourly: HourlyReading[] }) {
   const [view, setView] = useState<View>("wind")
 
   return (
@@ -159,7 +159,7 @@ export function TrendChart() {
               className="absolute inset-0"
             >
               <ResponsiveContainer width="100%" height="100%" initialDimension={{ width: 600, height: 280 }}>
-                <Chart view={view} />
+                <Chart view={view} hourly={hourly} />
               </ResponsiveContainer>
             </motion.div>
           </AnimatePresence>

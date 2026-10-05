@@ -16,7 +16,7 @@ import {
   Stagger,
   StaggerItem,
 } from "@/components/dashboard/motion"
-import { conditions, type Condition } from "@/lib/dashboard-data"
+import type { Condition } from "@/lib/dashboard-data"
 
 const icons: Record<Condition["icon"], typeof Wind> = {
   wind: Wind,
@@ -33,7 +33,7 @@ const trends = {
   steady: { icon: ArrowRight, label: "Steady" },
 }
 
-export function ConditionCards() {
+export function ConditionCards({ conditions }: { conditions: Condition[] }) {
   return (
     <Stagger className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-6">
       {conditions.map((condition) => {

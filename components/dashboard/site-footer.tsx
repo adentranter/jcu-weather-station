@@ -5,9 +5,11 @@ export function SiteFooter() {
         <div className="space-y-3">
           <p className="text-foreground">cyclone testing station · prototype</p>
           <p>
-            Live-looking values on this page are simulated. Sources are the Bureau of
-            Meteorology and Queensland Government open data, generally under Creative
-            Commons Attribution licences — check each dataset page for current terms.
+            Observations, sea state, tides, warnings and river gauges come from the Bureau
+            of Meteorology, Queensland Government open data and DataQuoll; any feed that is
+            unavailable falls back to simulated values, marked in Data sources. Not for
+            emergency decisions — follow official warnings. Data is generally under Creative
+            Commons Attribution licences; check each dataset page for current terms.
           </p>
           <a
             href="https://www.jcu.edu.au/cyclone-testing-station"
