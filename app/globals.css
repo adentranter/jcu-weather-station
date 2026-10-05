@@ -1,0 +1,108 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-figtree);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-figtree);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-navy-950: var(--navy-950);
+  --color-navy-900: var(--navy-900);
+  --color-navy-800: var(--navy-800);
+  --color-wind: var(--chart-1);
+  --color-gust: var(--chart-2);
+  --color-sea: var(--chart-3);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* Single dark navy theme, after adentranter.com. */
+:root {
+  color-scheme: dark;
+  --navy-950: oklch(0.2 0.035 268);
+  --navy-900: oklch(0.25 0.045 268);
+  --navy-800: oklch(0.31 0.05 268);
+  --background: var(--navy-800);
+  --foreground: oklch(0.95 0.008 268);
+  --card: oklch(0.24 0.04 268 / 55%);
+  --card-foreground: oklch(0.95 0.008 268);
+  --popover: oklch(0.22 0.04 268);
+  --popover-foreground: oklch(0.95 0.008 268);
+  --primary: oklch(0.93 0.01 268);
+  --primary-foreground: oklch(0.22 0.04 268);
+  --secondary: oklch(0.36 0.045 268);
+  --secondary-foreground: oklch(0.95 0.008 268);
+  --muted: oklch(0.34 0.04 268);
+  --muted-foreground: oklch(0.75 0.03 268);
+  --accent: oklch(0.36 0.045 268);
+  --accent-foreground: oklch(0.95 0.008 268);
+  --destructive: oklch(0.7 0.17 25);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 14%);
+  --ring: oklch(0.78 0.08 220);
+  --chart-1: oklch(0.8 0.1 215);
+  --chart-2: oklch(0.82 0.12 75);
+  --chart-3: oklch(0.78 0.11 170);
+  --chart-4: oklch(0.72 0.12 290);
+  --chart-5: oklch(0.7 0.15 25);
+  --radius: 0.75rem;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground;
+    background-image:
+      radial-gradient(60rem 30rem at 10% -10%, oklch(0.4 0.06 250 / 35%), transparent 70%),
+      radial-gradient(50rem 30rem at 100% 20%, oklch(0.36 0.06 200 / 18%), transparent 70%),
+      linear-gradient(180deg, var(--navy-800), var(--navy-900));
+    background-attachment: fixed;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
+
+@layer components {
+  .eyebrow {
+    @apply text-xs font-medium uppercase tracking-[0.3em] text-foreground/80;
+  }
+}

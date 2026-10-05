@@ -1,0 +1,11 @@
+.git
+.github
+.next
+node_modules
+npm-debug.log
+Dockerfile*
+docker-compose*
+.DS_Store
+.cursor
+.env*
+*.tsbuildinfo

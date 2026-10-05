@@ -1,0 +1,140 @@
+```json
+{
+  "location": "Townsville, Queensland, Australia",
+  "focus": "Public weather, wind, cyclone and related datasets useful for a Cyclone Testing Station style dashboard",
+  "primary_station": {
+    "name": "Townsville Aero",
+    "bom_station_number": "032040",
+    "latitude": -19.25,
+    "longitude": 146.77,
+    "elevation_m": 4,
+    "data_start": 1940,
+    "status": "Open"
+  },
+  "datasets": [
+    {
+      "id": "bom_townsville_aero",
+      "name": "BOM Townsville Aero Climate Data",
+      "description": "Long-term daily and monthly observations from the official Townsville Airport station. Core dataset for temperature, rainfall, wind, humidity, pressure and solar.",
+      "provider": "Bureau of Meteorology",
+      "variables": [
+        "max_temperature",
+        "min_temperature",
+        "rainfall",
+        "wind_speed",
+        "wind_gust",
+        "wind_direction",
+        "relative_humidity",
+        "mean_sea_level_pressure",
+        "sunshine_hours",
+        "solar_exposure",
+        "evaporation",
+        "cloud_cover"
+      ],
+      "access": {
+        "climate_data_online": "https://www.bom.gov.au/climate/data/",
+        "station_summary": "https://www.bom.gov.au/climate/averages/tables/cw_032040.shtml",
+        "weather_station_directory": "http://reg.bom.gov.au/climate/data/stations",
+        "notes": "Many daily/monthly series are free CSV downloads. Higher-resolution or some wind elements may require a low-cost data request."
+      },
+      "recommended_for": ["background climate", "extremes", "long-term wind statistics"]
+    },
+    {
+      "id": "bom_tropical_cyclone_database",
+      "name": "Australian Tropical Cyclone Database (Best Tracks)",
+      "description": "Official best-track database of all known tropical cyclones in the Australian region, including position, intensity and key parameters.",
+      "provider": "Bureau of Meteorology",
+      "variables": [
+        "cyclone_name",
+        "track_points",
+        "latitude",
+        "longitude",
+        "central_pressure",
+        "max_wind_speed",
+        "category",
+        "time"
+      ],
+      "access": {
+        "main_page": "https://www.bom.gov.au/cyclone/tropical-cyclone-knowledge-centre/databases/",
+        "history_page": "https://www.bom.gov.au/cyclone/history/",
+        "notes": "CSV track file and specification document available for download. Updated regularly."
+      },
+      "recommended_for": ["cyclone history", "track visualisation", "event filtering for Townsville/North Queensland"]
+    },
+    {
+      "id": "bom_objective_tc_reanalysis",
+      "name": "Objective Tropical Cyclone Reanalysis (1981–2016)",
+      "description": "Objective reanalysis of tropical cyclones in the Australian region (Joint Industry Project).",
+      "provider": "Bureau of Meteorology",
+      "variables": ["track", "intensity", "position"],
+      "access": {
+        "main_page": "https://www.bom.gov.au/cyclone/tropical-cyclone-knowledge-centre/databases/",
+        "notes": "CSV download available on the same page as the main TC database."
+      },
+      "recommended_for": ["consistent intensity estimates", "research-grade cyclone data"]
+    },
+    {
+      "id": "qld_waves_townsville",
+      "name": "Coastal Data System – Waves (Townsville)",
+      "description": "Measured and derived wave parameters from the Townsville wave monitoring buoy.",
+      "provider": "Queensland Government (Environment, Tourism, Science and Innovation)",
+      "variables": [
+        "significant_wave_height_Hs",
+        "maximum_wave_height_Hmax",
+        "zero_upcrossing_period_Tz",
+        "peak_energy_period_Tp",
+        "peak_direction",
+        "sea_surface_temperature"
+      ],
+      "time_coverage": "Approximately 2013–present (yearly files + near-real-time)",
+      "access": {
+        "dataset_page": "https://www.data.qld.gov.au/dataset/coastal-data-system-waves-townsville",
+        "data_gov_au": "https://data.gov.au/data/dataset/coastal-data-system-waves-townsville",
+        "notes": "Yearly CSV files available. Creative Commons licence."
+      },
+      "recommended_for": ["wave climate", "coastal loading context", "SST"]
+    },
+    {
+      "id": "qld_historical_waves",
+      "name": "Coastal Data System – Historical Wave Data (Queensland)",
+      "description": "Broader historical wave archive covering multiple Queensland coastal sites (including Townsville and nearby).",
+      "provider": "Queensland Government",
+      "access": {
+        "dataset_page": "https://www.data.qld.gov.au/dataset/coastal-data-system-historical-wave-data"
+      },
+      "recommended_for": ["longer historical wave context"]
+    },
+    {
+      "id": "qld_near_realtime_waves",
+      "name": "Coastal Data System – Near Real-Time Wave Data",
+      "description": "Near real-time wave and SST data for selected Queensland sites including Townsville.",
+      "provider": "Queensland Government",
+      "access": {
+        "notes": "Available via the Coastal Data System pages and data.qld.gov.au near-real-time feeds."
+      },
+      "recommended_for": ["live / recent dashboard views"]
+    },
+    {
+      "id": "townsville_tides",
+      "name": "Townsville Tide Gauge Data",
+      "description": "Predicted and observed water levels at Townsville.",
+      "provider": "Queensland Transport and Main Roads / data.qld.gov.au",
+      "variables": ["predicted_water_level", "high_low_tides"],
+      "access": {
+        "notes": "Search data.qld.gov.au for 'Townsville tide' – both interval and high/low predicted datasets available."
+      },
+      "recommended_for": ["storm surge / coastal water level context"]
+    }
+  ],
+  "additional_notes": {
+    "swirlnet": "The Cyclone Testing Station's portable SWIRLnet anemometer network provides high-resolution wind data during landfalling cyclones. Bulk public archives are not freely available; summaries appear in CTS technical reports and event papers on the JCU Cyclone Testing Station website.",
+    "cts_website": "https://www.jcu.edu.au/cyclone-testing-station",
+    "suggested_starter_set": [
+      "bom_townsville_aero (daily wind, temp, rain)",
+      "bom_tropical_cyclone_database",
+      "qld_waves_townsville"
+    ],
+    "licence_reminder": "Most BOM and Queensland open data are available under Creative Commons Attribution licences. Always check the specific dataset page for the current licence terms."
+  }
+}
+```
